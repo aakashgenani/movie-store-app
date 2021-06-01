@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+    <title>Movie Store</title>
+</head>
+<body>
+    <button onclick="window.location.href='http://127.0.0.1:5000/home';">
+      Home
+    </button>
+    <h1>Add Movie</h1>
+    <form action="/movie/add" method="post">
+        <p>IMDB ID:</p>
+        <p><input type="text" name="imdb_id"></p>
+        <p>Quantity:</p>
+        <p><input type="number" name="quantity"></p>
+        <p>Price:</p>
+        <p><input type="number" step="0.01" name="price"></p>
+        <p><input type="submit" value="Submit"></p>
+    </form>
+</body>
+</html>
