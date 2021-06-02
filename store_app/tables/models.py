@@ -37,3 +37,21 @@ class Movie(db.Model):
             'genre': self.genre,
             'year': self.year
             }
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return f"UserID: {self.id}, User Name: {self.name}"
+
+    def serialize(self):
+        """Return object data in easily serializable format"""
+        return {
+            'id': self.id,
+            'name': self.name,
+            }

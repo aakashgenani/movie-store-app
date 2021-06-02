@@ -2,8 +2,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movie_store.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/movie_store.db'
 db = SQLAlchemy(app)
 
-import models
-import views
+import tables.models
+from views import CRUD, ExternalAPI, homepage, queries, transaction
