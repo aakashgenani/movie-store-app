@@ -12,6 +12,14 @@ def get_poster_link(imdb_id):
     return image_link
 
 
+def get_movie_description(imdb_id):
+    url = "https://www.omdbapi.com/?i=" + imdb_id + '&apikey=aafb7441&'
+    data = urlopen(url).read()
+    data_p = json.loads(data)
+    movie_plot = data_p['Plot']
+    return movie_plot
+
+
 def get_info_from_api(imdb_id):
     url = "https://www.omdbapi.com/?i=" + imdb_id + '&apikey=aafb7441&'
     data = urlopen(url).read()

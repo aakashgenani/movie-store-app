@@ -29,17 +29,25 @@ def add_or_remove_movie():
             return make_response(jsonify(error=str(e)), 500)
 
 
-@app.route('/movies/<string:imdb_id>/update/quantity', methods=['PUT'])
+@app.route('/movies/<string:imdb_id>/quantity', methods=['PATCH'])
 def set_quantity(imdb_id):
-    new_quantity = request.json['quantity']
-    MovieCRUD.set_quantity(imdb_id, new_quantity)
-    msg = "Record successfully updated"
-    return make_response(jsonify(response=msg), 201)
+    try:
+        new_quantity = request.json['quantity']
+        MovieCRUD.set_quantity(imdb_id, new_quantity)
+        msg = "Record successfully updated"
+        return make_response(jsonify(response=msg), 201)
+    except Exception as e:
+        print(f'error: {str(e)}')
+        return make_response(jsonify(error=str(e)), 500)
 
 
-@app.route('/movies/<string:imdb_id>/update/price', methods=['PUT'])
+@app.route('/movies/<string:imdb_id>/price', methods=['PATCH'])
 def set_price(imdb_id):
-    new_price = request.json['price']
-    MovieCRUD.set_price(imdb_id, new_price)
-    msg = "Record successfully updated"
-    return make_response(jsonify(response=msg), 201)
+    try:
+        new_price = request.json['price']
+        MovieCRUD.set_price(imdb_id, new_price)
+        msg = "Record successfully updated"
+        return make_response(jsonify(response=msg), 201)
+    except Exception as e:
+        print(f'error: {str(e)}')
+        return make_response(jsonify(error=str(e)), 500)
