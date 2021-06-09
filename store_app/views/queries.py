@@ -1,6 +1,7 @@
 from flask import make_response, jsonify, request
 from tables.models import Movie, User, UserPurchase
 from app import app
+from business import MovieCRUD
 
 
 @app.route('/movies/total-count', methods=['GET'])
@@ -50,6 +51,18 @@ def get_movies_by_rated(rated):
     try:
         movies = Movie.query.filter_by(rated=rated).all()
         return make_response(jsonify([m.serialize() for m in movies]), 200)
+    except Exception as e:
+        print(f'error: {str(e)}')
+        return make_response(jsonify(error=str(e)), 500)
+
+
+@app.route('/movies/purchase-date', methods=['GET'])
+def get_movies_within_date_range():
+    try:
+        lower_date = request.args.get('low_date')
+        upper_date = request.args.get('up_date')
+        purchases = MovieCRUD.get_movie_by_date_range(lower_date=lower_date, upper_date=upper_date)
+        return make_response(jsonify([m.serialize() for m in purchases]), 200)
     except Exception as e:
         print(f'error: {str(e)}')
         return make_response(jsonify(error=str(e)), 500)

@@ -49,7 +49,6 @@ class Movie(db.Model):
         }
 
 
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -94,6 +93,7 @@ class UserPurchase(db.Model):
         return {
             'transaction_id': self.id,
             'user_id': self.user_id,
+            'username': User.query.get(self.user_id).username,
             'imdb_id': self.imdb_id,
             'Movie title': self.movie_rel.title,
             'quantity_purchased': self.quantity_purchased,

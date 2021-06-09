@@ -19,5 +19,6 @@ def purchase(user_id, imdb_id, quantity_purchased):
         return msg
     except ValueError:
         db.session.rollback()
-        msg = "Value Error: Movie quantity cannot be negative."
+        movie = Movie.query.filter_by(imdb_id=imdb_id).first()
+        msg = f'Quantity: {quantity_purchased} not available. Only {movie.quantity} available'
         return msg

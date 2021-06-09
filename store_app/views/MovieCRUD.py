@@ -51,3 +51,15 @@ def set_price(imdb_id):
     except Exception as e:
         print(f'error: {str(e)}')
         return make_response(jsonify(error=str(e)), 500)
+
+
+@app.route('/movies/<string:imdb_id>/year', methods=['PATCH'])
+def set_year(imdb_id):
+    try:
+        new_year = request.json['year']
+        MovieCRUD.set_year(imdb_id, new_year)
+        msg = "Record successfully updated"
+        return make_response(jsonify(response=msg), 201)
+    except Exception as e:
+        print(f'error: {str(e)}')
+        return make_response(jsonify(error=str(e)), 500)
