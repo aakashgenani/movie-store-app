@@ -27,8 +27,14 @@ def get_movies_by_title(title):
 @app.route('/movies/price-range', methods=['GET'])
 def get_movies_in_price_range():
     try:
-        max_price = request.args.get('max_price')
-        min_price = request.args.get('min_price')
+        if not request.args.get('max_price'):
+            raise RuntimeError("Missing max_price parameter which is mandatory")
+        elif not request.args.get('min_price'):
+            raise RuntimeError('Missing min_price parameter which is mandatory')
+        else:
+            max_price = request.args.get('max_price')
+            min_price = request.args.get('min_price')
+
         movies = Movie.query.filter(Movie.price < max_price, Movie.price > min_price).all()
         return make_response(jsonify([m.serialize() for m in movies]), 200)
     except Exception as e:
@@ -59,8 +65,13 @@ def get_movies_by_rated(rated):
 @app.route('/movies/purchase-date', methods=['GET'])
 def get_movies_within_date_range():
     try:
-        lower_date = request.args.get('low_date')
-        upper_date = request.args.get('up_date')
+        if not request.args.get('low_date'):
+            raise ValueError("Missing low_date parameter")
+        elif not request.args.get('up_date'):
+            raise ValueError('Missing up_date parameter')
+        else:
+            lower_date = request.args.get('low_date')
+            upper_date = request.args.get('up_date')
         purchases = MovieCRUD.get_movie_by_date_range(lower_date=lower_date, upper_date=upper_date)
         return make_response(jsonify([m.serialize() for m in purchases]), 200)
     except Exception as e:

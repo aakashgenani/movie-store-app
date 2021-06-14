@@ -1,17 +1,26 @@
 from flask import make_response, jsonify
-from business import ConnectExternalAPI
 from tables.models import Movie
 from app import app
-import webbrowser
+
+
+@app.route('/movies/<int:movie_id>/description', methods=['GET'])
+def get_movie_description(movie_id):
+    try:
+        if not Movie.query.get(movie_id):
+            raise ValueError(f"Movie with movie_id: {movie_id} is not in the database")
+        else:
+            description = Movie.query.get(movie_id).additional_info()['description']
+            return make_response(jsonify(description), 200)
+    except Exception as e:
+        print(f'error: {str(e)}')
+        return make_response(jsonify(error=str(e)), 500)
 
 
 @app.route('/movies/<int:movie_id>/poster', methods=['GET'])
-def get_poster(movie_id):
+def get_movie_poster(movie_id):
     try:
-        movie = Movie.query.filter_by(id=movie_id).first()
-        image_link = ConnectExternalAPI.get_poster_link(movie.imdb_id)
-        webbrowser.open_new_tab(image_link)
-        return make_response(jsonify(response='ok'), 201)
+        description = Movie.query.get(movie_id).additional_info()['poster']
+        return make_response(jsonify(description), 200)
     except Exception as e:
         print(f'error: {str(e)}')
         return make_response(jsonify(error=str(e)), 500)

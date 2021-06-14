@@ -5,7 +5,6 @@ from business import transaction
 
 @app.route('/movies/transaction', methods=['PUT'])
 def movie_bought_update_quantity():
-    # if request.method == "PUT":
     try:
         user_id = request.json['user_id']
         imdb_id = request.json['imdb_id']

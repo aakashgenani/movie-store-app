@@ -1,6 +1,5 @@
 from tables.models import Movie, UserPurchase, User
 from app import db
-from business import MovieCRUD
 
 
 def purchase(user_id, imdb_id, quantity_purchased):
@@ -11,8 +10,6 @@ def purchase(user_id, imdb_id, quantity_purchased):
             raise ValueError('Movie quantity cannot be negative.')
         user = User.query.filter_by(id=user_id).first()
         transaction = UserPurchase(user_id=user.id, imdb_id=imdb_id, quantity_purchased=quantity_purchased)
-        # if movie.quantity == 0:
-        #     MovieCRUD.delete_movie(imdb_id)
         db.session.add(transaction)
         db.session.commit()
         msg = 'Transaction Successful.'
