@@ -2,8 +2,8 @@ from app import db
 from tables.models import User
 
 
-def insert_user(name):
-    user = User(name)
+def insert_user(username, password, role):
+    user = User(username, password, role)
     db.session.add(user)
     db.session.commit()
 

@@ -1,12 +1,22 @@
-from flask import make_response, jsonify, request
+from flask import make_response, jsonify, request, g, session
 from tables.models import Movie, User, UserPurchase
 from app import app
 from business import MovieCRUD
 
 
+@app.before_request
+def before_request():
+    g.user = None
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+        g.user = user
+
+
 @app.route('/movies/total-count', methods=['GET'])
 def get_count_entries():
     try:
+        if g.user.role != 'customer' or 'admin':
+            raise ValueError('User needs to be a customer or admin')
         count = Movie.query.count()
         return make_response(jsonify(count))
     except Exception as e:
@@ -17,6 +27,8 @@ def get_count_entries():
 @app.route('/movies/title/<string:title>', methods=['GET'])
 def get_movies_by_title(title):
     try:
+        if g.user.role != 'customer' or 'admin':
+            raise ValueError('User needs to be a customer or admin')
         movies = Movie.query.filter(Movie.title.like(f'%{title}%')).all()
         return make_response(jsonify([m.serialize() for m in movies]), 200)
     except Exception as e:
@@ -27,6 +39,8 @@ def get_movies_by_title(title):
 @app.route('/movies/price-range', methods=['GET'])
 def get_movies_in_price_range():
     try:
+        if g.user.role != 'customer' or 'admin':
+            raise ValueError('User needs to be a customer or admin')
         if not request.args.get('max_price'):
             raise RuntimeError("Missing max_price parameter which is mandatory")
         elif not request.args.get('min_price'):
@@ -45,6 +59,8 @@ def get_movies_in_price_range():
 @app.route('/movies/directors/<string:director_name>', methods=['GET'])
 def get_movies_by_director(director_name):
     try:
+        if g.user.role != 'customer' or 'admin':
+            raise ValueError('User needs to be a customer or admin')
         movies = Movie.query.filter(Movie.director.like(f'%{director_name}%')).all()
         return make_response(jsonify([m.serialize() for m in movies]), 200)
     except Exception as e:
@@ -55,6 +71,8 @@ def get_movies_by_director(director_name):
 @app.route('/movies/rated/<string:rated>', methods=['GET'])
 def get_movies_by_rated(rated):
     try:
+        if g.user.role != 'customer' or 'admin':
+            raise ValueError('User needs to be a customer or admin')
         movies = Movie.query.filter_by(rated=rated).all()
         return make_response(jsonify([m.serialize() for m in movies]), 200)
     except Exception as e:
@@ -65,6 +83,8 @@ def get_movies_by_rated(rated):
 @app.route('/movies/purchase-date', methods=['GET'])
 def get_movies_within_date_range():
     try:
+        if g.user.role != 'admin':
+            raise ValueError('User needs to be an admin')
         if not request.args.get('low_date'):
             raise ValueError("Missing low_date parameter")
         elif not request.args.get('up_date'):
@@ -82,6 +102,8 @@ def get_movies_within_date_range():
 @app.route('/users/<int:user_id>/movies', methods=['GET'])
 def get_movies_bought_by_user_id(user_id):
     try:
+        if g.user.role != 'admin' or g.user.id != user_id:
+            raise ValueError('User needs to be an admin or the same user who is performing the query')
         purchases = UserPurchase.query.filter_by(user_id=user_id).all()
         return make_response(jsonify([m.serialize() for m in purchases]), 200)
     except Exception as e:
@@ -92,6 +114,8 @@ def get_movies_bought_by_user_id(user_id):
 @app.route('/users/<string:username>/movies', methods=['GET'])
 def get_movies_bought_by_username(username):
     try:
+        if g.user.role != 'admin' or g.user.username != username:
+            raise ValueError('User needs to be an admin or the same user who is performing the query')
         user = User.query.filter_by(username=username).first()
         return make_response(jsonify([m.serialize() for m in user.purchases]), 200)
     except Exception as e:
