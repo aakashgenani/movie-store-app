@@ -12,7 +12,7 @@ def add_or_remove_user():
             username = request.json['username']
             password = request.json['password']
             role = request.json['role']
-            if role != 'admin' or 'customer':
+            if role != 'admin' and role != 'customer':
                 raise ValueError("Roles can either be 'customer' or 'admin'")
             UserCRUD.insert_user(username=username, password=password, role=role)
             msg = "Record successfully added"

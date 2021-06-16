@@ -6,7 +6,7 @@ from tables.models import Movie
 @app.route('/movies/<int:movie_id>/description', methods=['GET'])
 def get_movie_description(movie_id):
     try:
-        if g.user.role != 'admin' or 'customer':
+        if g.user.role != 'admin' and g.user.role != 'customer':
             raise ValueError("User must be either admin or customer.")
         if not Movie.query.get(movie_id):
             raise ValueError(f"Movie with movie_id: {movie_id} is not in the database")
@@ -21,7 +21,7 @@ def get_movie_description(movie_id):
 @app.route('/movies/<int:movie_id>/poster', methods=['GET'])
 def get_movie_poster(movie_id):
     try:
-        if g.user.role != 'admin' or 'customer':
+        if g.user.role != 'admin' and g.user.role != 'customer':
             raise ValueError("User must be either admin or customer.")
         poster = Movie.query.get(movie_id).additional_info()['poster']
         return make_response(jsonify(poster), 200)

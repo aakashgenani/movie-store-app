@@ -1,20 +1,14 @@
 from flask import make_response, jsonify, request, session, url_for, redirect, g
-from tables.models import Movie, User, UserPurchase
+from tables.models import User
 from app import app
 
 
 @app.before_request
 def before_request():
     g.user = None
-    # try:
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
         g.user = user
-    #     else:
-    #         raise ValueError('User not logged in')
-    # except Exception as e:
-    #     print(f'error: {str(e)}')
-    #     return make_response(jsonify(error=str(e)), 500)
 
 
 @app.route('/login', methods=['POST'])
@@ -29,7 +23,6 @@ def login():
             return redirect(url_for('profile'))
         else:
             return make_response(jsonify(response='Incorrect details entered. Try again'))
-            # return make_response(jsonify(response='User logged in'), 200)
     except Exception as e:
         print(f'error: {str(e)}')
         return make_response(jsonify(error=str(e)), 500)

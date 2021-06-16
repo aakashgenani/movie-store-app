@@ -15,7 +15,7 @@ def before_request():
 @app.route('/movies/total-count', methods=['GET'])
 def get_count_entries():
     try:
-        if g.user.role != 'customer' or 'admin':
+        if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
         count = Movie.query.count()
         return make_response(jsonify(count))
@@ -24,10 +24,22 @@ def get_count_entries():
         return make_response(jsonify(error=str(e)), 500)
 
 
+@app.route('/movies/<int:movie_id>', methods=['GET'])
+def get_movie_details(movie_id):
+    try:
+        if g.user.role != 'customer' and g.user.role != 'admin':
+            raise ValueError('User needs to be a customer or admin')
+        movie = Movie.query.get(movie_id)
+        return make_response(jsonify(str(movie)), 200)
+    except Exception as e:
+        print(f'error: {str(e)}')
+        return make_response(jsonify(error=str(e)), 500)
+
+
 @app.route('/movies/title/<string:title>', methods=['GET'])
 def get_movies_by_title(title):
     try:
-        if g.user.role != 'customer' or 'admin':
+        if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
         movies = Movie.query.filter(Movie.title.like(f'%{title}%')).all()
         return make_response(jsonify([m.serialize() for m in movies]), 200)
@@ -39,7 +51,7 @@ def get_movies_by_title(title):
 @app.route('/movies/price-range', methods=['GET'])
 def get_movies_in_price_range():
     try:
-        if g.user.role != 'customer' or 'admin':
+        if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
         if not request.args.get('max_price'):
             raise RuntimeError("Missing max_price parameter which is mandatory")
@@ -59,7 +71,7 @@ def get_movies_in_price_range():
 @app.route('/movies/directors/<string:director_name>', methods=['GET'])
 def get_movies_by_director(director_name):
     try:
-        if g.user.role != 'customer' or 'admin':
+        if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
         movies = Movie.query.filter(Movie.director.like(f'%{director_name}%')).all()
         return make_response(jsonify([m.serialize() for m in movies]), 200)
@@ -71,7 +83,7 @@ def get_movies_by_director(director_name):
 @app.route('/movies/rated/<string:rated>', methods=['GET'])
 def get_movies_by_rated(rated):
     try:
-        if g.user.role != 'customer' or 'admin':
+        if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
         movies = Movie.query.filter_by(rated=rated).all()
         return make_response(jsonify([m.serialize() for m in movies]), 200)
@@ -102,7 +114,7 @@ def get_movies_within_date_range():
 @app.route('/users/<int:user_id>/movies', methods=['GET'])
 def get_movies_bought_by_user_id(user_id):
     try:
-        if g.user.role != 'admin' or g.user.id != user_id:
+        if g.user.role != 'admin' and g.user.id != user_id:
             raise ValueError('User needs to be an admin or the same user who is performing the query')
         purchases = UserPurchase.query.filter_by(user_id=user_id).all()
         return make_response(jsonify([m.serialize() for m in purchases]), 200)
@@ -114,7 +126,7 @@ def get_movies_bought_by_user_id(user_id):
 @app.route('/users/<string:username>/movies', methods=['GET'])
 def get_movies_bought_by_username(username):
     try:
-        if g.user.role != 'admin' or g.user.username != username:
+        if g.user.role != 'admin' and g.user.username != username:
             raise ValueError('User needs to be an admin or the same user who is performing the query')
         user = User.query.filter_by(username=username).first()
         return make_response(jsonify([m.serialize() for m in user.purchases]), 200)

@@ -3,7 +3,7 @@ from business import ConnectExternalAPI, MovieCRUD
 from app import app
 
 
-@app.route('/movie', methods=['POST', 'DELETE'])
+@app.route('/movies', methods=['POST', 'DELETE'])
 def add_or_remove_movie():
     if request.method == "POST":
         try:
