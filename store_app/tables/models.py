@@ -1,6 +1,6 @@
 from app import db
 from datetime import datetime
-from business import ConnectExternalAPI
+from business import connect_external_API
 
 
 class Movie(db.Model):
@@ -24,7 +24,7 @@ class Movie(db.Model):
         self.director = director
         self.genre = genre
         self.year = year
-        self.poster = ConnectExternalAPI.get_poster_link(self.imdb_id)
+        self.poster = connect_external_API.get_poster_link(self.imdb_id)
 
     def __repr__(self):
         return f"Movie Title: {self.title}, Quantity Available: {self.quantity}, Price: ${self.price}"
@@ -44,8 +44,8 @@ class Movie(db.Model):
 
     def additional_info(self):
         return{
-            'poster': ConnectExternalAPI.get_poster_link(imdb_id=self.imdb_id),
-            'description': ConnectExternalAPI.get_movie_description(imdb_id=self.imdb_id)
+            'poster': connect_external_API.get_poster_link(imdb_id=self.imdb_id),
+            'description': connect_external_API.get_movie_description(imdb_id=self.imdb_id)
         }
 
 

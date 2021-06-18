@@ -1,5 +1,5 @@
 from flask import make_response, jsonify, request, g
-from business import ConnectExternalAPI, MovieCRUD
+from business import connect_external_API, movie_edit_funcs
 from app import app
 
 
@@ -12,8 +12,8 @@ def add_or_remove_movie():
             imdb_id = request.json['imdb_id']
             quantity = request.json['quantity']
             price = request.json['price']
-            title, rated, director, genre, year = ConnectExternalAPI.get_info_from_api(imdb_id)
-            MovieCRUD.insert_movie(imdb_id, title, quantity, price, rated, director, genre, year)
+            title, rated, director, genre, year = connect_external_API.get_info_from_api(imdb_id)
+            movie_edit_funcs.insert_movie(imdb_id, title, quantity, price, rated, director, genre, year)
             msg = "Record successfully added"
             return make_response(jsonify(response=msg), 201)
         except Exception as e:
@@ -25,7 +25,7 @@ def add_or_remove_movie():
             if g.user.role != 'admin':
                 raise ValueError('User must be an admin to perform this function.')
             imdb_id = request.json['imdb_id']
-            MovieCRUD.delete_movie(imdb_id)
+            movie_edit_funcs.delete_movie(imdb_id)
             msg = "Record successfully deleted"
             return make_response(jsonify(response=msg), 201)
         except Exception as e:
@@ -39,7 +39,7 @@ def set_quantity(imdb_id):
         if g.user.role != 'admin':
             raise ValueError('User must be an admin to perform this function.')
         new_quantity = request.json['quantity']
-        MovieCRUD.set_quantity(imdb_id, new_quantity)
+        movie_edit_funcs.set_quantity(imdb_id, new_quantity)
         msg = "Record successfully updated"
         return make_response(jsonify(response=msg), 201)
     except Exception as e:
@@ -53,7 +53,7 @@ def set_price(imdb_id):
         if g.user.role != 'admin':
             raise ValueError('User must be an admin to perform this function.')
         new_price = request.json['price']
-        MovieCRUD.set_price(imdb_id, new_price)
+        movie_edit_funcs.set_price(imdb_id, new_price)
         msg = "Record successfully updated"
         return make_response(jsonify(response=msg), 201)
     except Exception as e:
@@ -67,7 +67,7 @@ def set_year(imdb_id):
         if g.user.role != 'admin':
             raise ValueError('User must be an admin to perform this function.')
         new_year = request.json['year']
-        MovieCRUD.set_year(imdb_id, new_year)
+        movie_edit_funcs.set_year(imdb_id, new_year)
         msg = "Record successfully updated"
         return make_response(jsonify(response=msg), 201)
     except Exception as e:

@@ -1,7 +1,7 @@
 from flask import make_response, jsonify, request, g, session
 from tables.models import Movie, User, UserPurchase
 from app import app
-from business import MovieCRUD
+from business import movie_edit_funcs
 
 
 @app.before_request
@@ -104,7 +104,7 @@ def get_movies_within_date_range():
         else:
             lower_date = request.args.get('low_date')
             upper_date = request.args.get('up_date')
-        purchases = MovieCRUD.get_movie_by_date_range(lower_date=lower_date, upper_date=upper_date)
+        purchases = movie_edit_funcs.get_movie_by_date_range(lower_date=lower_date, upper_date=upper_date)
         return make_response(jsonify([m.serialize() for m in purchases]), 200)
     except Exception as e:
         print(f'error: {str(e)}')

@@ -17,3 +17,9 @@ def change_username(user_id, new_username):
     user = User.query.get(user_id)
     user.username = new_username
     db.session.commit()
+
+
+def change_password(user_id, new_password):
+    user = User.query.get(user_id)
+    user.password = new_password
+    db.session.commit()
