@@ -7,4 +7,4 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/movie_store.db'
 db = SQLAlchemy(app)
 
 import tables.models
-from views import movie_edit, user_edit, external_API, homepage, queries, transaction, login_session
+from views import movie_edit, user_edit, external_API, homepage, queries, transaction, login_session, recommender
