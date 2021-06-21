@@ -24,6 +24,18 @@ def get_count_entries():
         return make_response(jsonify(error=str(e)), 500)
 
 
+@app.route('/movies/all', methods=['GET'])
+def get_movies_all():
+    try:
+        if g.user.role != 'customer' and g.user.role != 'admin':
+            raise ValueError('User needs to be a customer or admin')
+        movies = Movie.query.all()
+        return make_response(jsonify([m.serialize() for m in movies]), 200)
+    except Exception as e:
+        print(f'error: {str(e)}')
+        return make_response(jsonify(error=str(e)), 500)
+
+
 @app.route('/movies/<int:movie_id>', methods=['GET'])
 def get_movie_details(movie_id):
     try:
@@ -74,6 +86,18 @@ def get_movies_by_director(director_name):
         if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
         movies = Movie.query.filter(Movie.director.like(f'%{director_name}%')).all()
+        return make_response(jsonify([m.serialize() for m in movies]), 200)
+    except Exception as e:
+        print(f'error: {str(e)}')
+        return make_response(jsonify(error=str(e)), 500)
+
+
+@app.route('/movies/genre/<string:genre>', methods=['GET'])
+def get_movies_by_genre(genre):
+    try:
+        if g.user.role != 'customer' and g.user.role != 'admin':
+            raise ValueError('User needs to be a customer or admin')
+        movies = Movie.query.filter(Movie.genre.like(f'%{genre}%')).all()
         return make_response(jsonify([m.serialize() for m in movies]), 200)
     except Exception as e:
         print(f'error: {str(e)}')

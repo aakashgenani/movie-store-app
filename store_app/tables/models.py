@@ -32,6 +32,7 @@ class Movie(db.Model):
     def serialize(self):
         """Return object data in easily serializable format"""
         return {
+            'movie_id': self.id,
             'imdb_id': self.imdb_id,
             'title': self.title,
             'quantity': self.quantity,
