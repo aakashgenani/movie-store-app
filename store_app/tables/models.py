@@ -1,6 +1,7 @@
 from app import db
 from datetime import datetime
-from business import connect_external_API
+from business import OmdbApiGateway
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class Movie(db.Model):
@@ -24,7 +25,7 @@ class Movie(db.Model):
         self.director = director
         self.genre = genre
         self.year = year
-        self.poster = connect_external_API.get_poster_link(self.imdb_id)
+        self.poster = OmdbApiGateway.get_poster_link(self.imdb_id)
 
     def __repr__(self):
         return f"Movie Title: {self.title}, Quantity Available: {self.quantity}, Price: ${self.price}"
@@ -45,8 +46,8 @@ class Movie(db.Model):
 
     def additional_info(self):
         return{
-            'poster': connect_external_API.get_poster_link(imdb_id=self.imdb_id),
-            'description': connect_external_API.get_movie_description(imdb_id=self.imdb_id)
+            'poster': OmdbApiGateway.get_poster_link(imdb_id=self.imdb_id),
+            'description': OmdbApiGateway.get_movie_description(imdb_id=self.imdb_id)
         }
 
 
@@ -59,11 +60,14 @@ class User(db.Model):
 
     def __init__(self, username, password, role):
         self.username = username
-        self.password = password
+        self.password = generate_password_hash(password)
         self.role = role
 
     def __repr__(self):
         return f"UserID: {self.id}, User Name: {self.username}"
+
+    def verify_password(self, password):
+        return check_password_hash(self.password, password)
 
     def serialize(self):
         """Return object data in easily serializable format"""

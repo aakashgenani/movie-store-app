@@ -1,14 +1,13 @@
 from flask import make_response, jsonify, request, g, session
-from tables.models import Movie, User, UserPurchase
+from data_access import movie_edit_funcs, get_movies_funcs, get_purchases_funcs, get_users_funcs
 from app import app
-from business import movie_edit_funcs
 
 
 @app.before_request
 def before_request():
     g.user = None
     if 'user_id' in session:
-        user = User.query.get(session['user_id'])
+        user = get_users_funcs.get_user_session()
         g.user = user
 
 
@@ -17,7 +16,7 @@ def get_count_entries():
     try:
         if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
-        count = Movie.query.count()
+        count = get_movies_funcs.get_movies_count()
         return make_response(jsonify(count))
     except Exception as e:
         print(f'error: {str(e)}')
@@ -29,7 +28,7 @@ def get_movies_all():
     try:
         if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
-        movies = Movie.query.all()
+        movies = get_movies_funcs.get_movies_all()
         return make_response(jsonify([m.serialize() for m in movies]), 200)
     except Exception as e:
         print(f'error: {str(e)}')
@@ -41,7 +40,7 @@ def get_movie_details(movie_id):
     try:
         if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
-        movie = Movie.query.get(movie_id)
+        movie = get_movies_funcs.get_movie_by_movie_id(movie_id=movie_id)
         return make_response(jsonify(str(movie)), 200)
     except Exception as e:
         print(f'error: {str(e)}')
@@ -53,7 +52,7 @@ def get_movies_by_title(title):
     try:
         if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
-        movies = Movie.query.filter(Movie.title.like(f'%{title}%')).all()
+        movies = get_movies_funcs.get_movies_by_title(title=title)
         return make_response(jsonify([m.serialize() for m in movies]), 200)
     except Exception as e:
         print(f'error: {str(e)}')
@@ -72,8 +71,7 @@ def get_movies_in_price_range():
         else:
             max_price = request.args.get('max_price')
             min_price = request.args.get('min_price')
-
-        movies = Movie.query.filter(Movie.price < max_price, Movie.price > min_price).all()
+        movies = get_movies_funcs.get_movies_within_price_range(max_price=max_price, min_price=min_price)
         return make_response(jsonify([m.serialize() for m in movies]), 200)
     except Exception as e:
         print(f'error: {str(e)}')
@@ -85,7 +83,7 @@ def get_movies_by_director(director_name):
     try:
         if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
-        movies = Movie.query.filter(Movie.director.like(f'%{director_name}%')).all()
+        movies = get_movies_funcs.get_movies_by_director(director_name=director_name)
         return make_response(jsonify([m.serialize() for m in movies]), 200)
     except Exception as e:
         print(f'error: {str(e)}')
@@ -97,7 +95,7 @@ def get_movies_by_genre(genre):
     try:
         if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
-        movies = Movie.query.filter(Movie.genre.like(f'%{genre}%')).all()
+        movies = get_movies_funcs.get_movies_by_genre(genre)
         return make_response(jsonify([m.serialize() for m in movies]), 200)
     except Exception as e:
         print(f'error: {str(e)}')
@@ -109,7 +107,7 @@ def get_movies_by_rated(rated):
     try:
         if g.user.role != 'customer' and g.user.role != 'admin':
             raise ValueError('User needs to be a customer or admin')
-        movies = Movie.query.filter_by(rated=rated).all()
+        movies = get_movies_funcs.get_movies_by_rating(rated)
         return make_response(jsonify([m.serialize() for m in movies]), 200)
     except Exception as e:
         print(f'error: {str(e)}')
@@ -140,7 +138,7 @@ def get_movies_bought_by_user_id(user_id):
     try:
         if g.user.role != 'admin' and g.user.id != user_id:
             raise ValueError('User needs to be an admin or the same user who is performing the query')
-        purchases = UserPurchase.query.filter_by(user_id=user_id).all()
+        purchases = get_purchases_funcs.get_purchases_by_user_id(user_id=user_id)
         return make_response(jsonify([m.serialize() for m in purchases]), 200)
     except Exception as e:
         print(f'error: {str(e)}')
@@ -152,7 +150,7 @@ def get_movies_bought_by_username(username):
     try:
         if g.user.role != 'admin' and g.user.username != username:
             raise ValueError('User needs to be an admin or the same user who is performing the query')
-        user = User.query.filter_by(username=username).first()
+        user = get_users_funcs.get_user_by_username(username=username)
         return make_response(jsonify([m.serialize() for m in user.purchases]), 200)
     except Exception as e:
         print(f'error: {str(e)}')

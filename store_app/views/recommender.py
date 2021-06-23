@@ -1,6 +1,6 @@
 from flask import make_response, jsonify, g
 from app import app
-from business import recommendation
+from data_access import recommendation
 
 
 @app.route('/users/<int:user_id>/recommendation', methods=['GET'])

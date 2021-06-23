@@ -1,14 +1,18 @@
 from flask import make_response, jsonify, request, g
-from business import user_edit_funcs
+from data_access import user_edit_funcs
 from app import app
+from werkzeug.security import generate_password_hash
 
 
 @app.route('/users', methods=['POST', 'DELETE'])
 def add_or_remove_user():
     if request.method == "POST":
         try:
-            if g.user.role != 'admin':
-                raise ValueError('User needs to be an admin to perform this function.')
+            if g.user:
+                if g.user.role != 'admin':
+                    raise ValueError('User needs to be an admin to perform this function.')
+            else:
+                raise ValueError('User must be logged in.')
             username = request.json['username']
             password = request.json['password']
             role = request.json['role']
@@ -51,9 +55,13 @@ def change_username(user_id):
 @app.route('/users/<int:user_id>/password', methods=['PATCH'])
 def change_password(user_id):
     try:
-        if g.user.role != 'admin' and g.user.id != user_id:
+        if g.user.id != user_id:
             raise ValueError("Only admin or the user changing the username can perform this function")
-        new_password = request.json['password']
+        new_password = request.json['new_password']
+        old_password = request.json['old_password']
+        # old_password_hash = generate_password_hash(old_password)
+        if not g.user.verify_password(old_password):
+            raise ValueError("Incorrect password entered.")
         user_edit_funcs.change_password(user_id, new_password)
         msg = "Record successfully updated"
         return make_response(jsonify(response=msg), 201)

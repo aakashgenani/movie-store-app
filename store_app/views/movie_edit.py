@@ -1,5 +1,6 @@
 from flask import make_response, jsonify, request, g
-from business import connect_external_API, movie_edit_funcs
+from business import OmdbApiGateway
+from data_access import movie_edit_funcs
 from app import app
 
 
@@ -12,7 +13,7 @@ def add_or_remove_movie():
             imdb_id = request.json['imdb_id']
             quantity = request.json['quantity']
             price = request.json['price']
-            title, rated, director, genre, year = connect_external_API.get_info_from_api(imdb_id)
+            title, rated, director, genre, year = OmdbApiGateway.get_info_from_api(imdb_id)
             movie_edit_funcs.insert_movie(imdb_id, title, quantity, price, rated, director, genre, year)
             msg = "Record successfully added"
             return make_response(jsonify(response=msg), 201)

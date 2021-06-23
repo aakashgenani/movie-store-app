@@ -1,5 +1,6 @@
 from app import db
 from tables.models import User
+from werkzeug.security import generate_password_hash
 
 
 def insert_user(username, password, role):
@@ -21,5 +22,5 @@ def change_username(user_id, new_username):
 
 def change_password(user_id, new_password):
     user = User.query.get(user_id)
-    user.password = new_password
+    user.password = generate_password_hash(new_password)
     db.session.commit()
